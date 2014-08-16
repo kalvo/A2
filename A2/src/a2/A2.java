@@ -13,6 +13,7 @@ import de.fhpotsdam.unfolding.*;
 import de.fhpotsdam.unfolding.geo.*;
 import de.fhpotsdam.unfolding.utils.*;
 
+
 public class A2 extends PApplet {
 
 	
@@ -37,9 +38,9 @@ public class A2 extends PApplet {
 	
 	public void setup() {
 		
-		size(700, 700, P2D);
+		size(1000, 700, P2D);
 		background(0);
-		//frameRate(10);
+		frameRate(10);
 		
 		
 //		List<Integer> I = new ArrayList<>();
@@ -67,24 +68,44 @@ public class A2 extends PApplet {
 //		json = loadJSONObject("/Users/raul/Documents/Aerogramm/Data/S5.json");
 //		DataParser.Update_Fleet_with_FlightRadar24JSON(json,f);
 		
-		json = loadJSONObject("/Users/raul/Documents/Aerogramm/Data/20140719_083619.json");
+		// D:\Users\raul\Documents\Aerogramm\Data\
+		
+		json = loadJSONObject("D:/Users/raul/Documents/Aerogramm/Data/20140719_083619.json");
 		DataParser.Update_Fleet_with_FlightRadar24JSON(json,f);
 
-		json = loadJSONObject("/Users/raul/Documents/Aerogramm/Data/20140719_083635.json");
+		json = loadJSONObject("D:/Users/raul/Documents/Aerogramm/Data/20140719_083635.json");
 		DataParser.Update_Fleet_with_FlightRadar24JSON(json,f);
 		
-		json = loadJSONObject("/Users/raul/Documents/Aerogramm/Data/20140719_083651.json");
+		json = loadJSONObject("D:/Users/raul/Documents/Aerogramm/Data/20140719_083651.json");
 		DataParser.Update_Fleet_with_FlightRadar24JSON(json,f);
 		
-		json = loadJSONObject("/Users/raul/Documents/Aerogramm/Data/20140719_083928.json");
+		json = loadJSONObject("D:/Users/raul/Documents/Aerogramm/Data/20140719_083928.json");
 		DataParser.Update_Fleet_with_FlightRadar24JSON(json,f);
 		
-		json = loadJSONObject("/Users/raul/Documents/Aerogramm/Data/20140719_083928.json");
+		json = loadJSONObject("D:/Users/raul/Documents/Aerogramm/Data/20140719_083928.json");
 		DataParser.Update_Fleet_with_FlightRadar24JSON(json,f);
 		
-		json = loadJSONObject("/Users/raul/Documents/Aerogramm/Data/20140719_085119.json");
+		json = loadJSONObject("D:/Users/raul/Documents/Aerogramm/Data/20140719_085119.json");
 		DataParser.Update_Fleet_with_FlightRadar24JSON(json,f);
+
 		
+//		json = loadJSONObject("/Users/raul/Documents/Aerogramm/Data/20140719_083619.json");
+//		DataParser.Update_Fleet_with_FlightRadar24JSON(json,f);
+//
+//		json = loadJSONObject("/Users/raul/Documents/Aerogramm/Data/20140719_083635.json");
+//		DataParser.Update_Fleet_with_FlightRadar24JSON(json,f);
+//		
+//		json = loadJSONObject("/Users/raul/Documents/Aerogramm/Data/20140719_083651.json");
+//		DataParser.Update_Fleet_with_FlightRadar24JSON(json,f);
+//		
+//		json = loadJSONObject("/Users/raul/Documents/Aerogramm/Data/20140719_083928.json");
+//		DataParser.Update_Fleet_with_FlightRadar24JSON(json,f);
+//		
+//		json = loadJSONObject("/Users/raul/Documents/Aerogramm/Data/20140719_083928.json");
+//		DataParser.Update_Fleet_with_FlightRadar24JSON(json,f);
+//		
+//		json = loadJSONObject("/Users/raul/Documents/Aerogramm/Data/20140719_085119.json");
+//		DataParser.Update_Fleet_with_FlightRadar24JSON(json,f);
 		
 		
 		println(f.length());
@@ -92,17 +113,21 @@ public class A2 extends PApplet {
 		bounds = f.getBounds();
 		counter =  (int) bounds[0];
 		
-//		map = new UnfoldingMap(this);
-//		map.zoomAndPanTo(new Location(50f, 7f), 8);
-//		MapUtils.createDefaultEventDispatcher(this, map);
+		map = new UnfoldingMap(this);
+		map.zoomAndPanTo(new Location(51.5f, 0.127f), 9);
+		MapUtils.createDefaultEventDispatcher(this, map);
 		
 		//noStroke();
 		
-		smooth();
+		smooth(8);
 		stroke(255, 255);
 		strokeWeight(1);
+		background(255);
 		
 		isReady = true;
+		
+		
+		
 		
 		
 	}
@@ -111,16 +136,19 @@ public class A2 extends PApplet {
 		
 		//map.draw();
 		
-		background(0);
+		//background(0, 50);
+		fill(255,10);
+		rect(0,0,1000, 700);
+		stroke(0);
 		
 		
 		if (!isReady) return;
 		
 		counter++;
 		
-		drawRawTail();
+		//drawRawTail();
 		//drawTail();
-		//drawPoints();
+		drawPoints();
 		
 	}
 	
@@ -177,8 +205,38 @@ public class A2 extends PApplet {
 		}
 		
 	}
-	
-	
+
+	public void drawGradientTail(){
+		
+		double[] current_vector;
+		double[] next_vector;
+		
+		if (counter >= bounds[1]) return;
+		
+		//println(counter);
+		
+		Hashtable<String, List<double[]>> Tails =  f.collectAcriveTails(counter-200, counter);	
+		
+		for (List<double[]> tail : Tails.values() ){
+			
+			for (int i = 0; i < tail.size()-1; i++){
+				
+				current_vector = tail.get(i);
+				next_vector =  tail.get(i+1);
+				
+				Location current_loc = new Location( current_vector[0], current_vector[1] );
+				Location next_loc = new Location( next_vector[0], next_vector[1] );
+				
+				ScreenPosition current_sp = map.getScreenPosition(current_loc);
+				ScreenPosition next_sp = map.getScreenPosition(next_loc);
+				
+				line(current_sp.x, current_sp.y, next_sp.x, next_sp.y);
+				
+			}
+			
+		}
+		
+	}
 
 	public void drawRawTail(){
 		
